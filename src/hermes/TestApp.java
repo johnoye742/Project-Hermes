@@ -16,6 +16,8 @@ public class TestApp {
         System.out.print("Enter a request: ");
         Scanner sc = new Scanner(System.in);
         String request = sc.nextLine();
+        
+        if(request.toLowerCase() == "q") System.exit(0);
 
         try (Socket socket = new Socket(hostname, port);
              PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
@@ -24,7 +26,7 @@ public class TestApp {
             out.println(request);
             
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			
+			 
 			System.out.println(br.readLine());
             
             main(args);
