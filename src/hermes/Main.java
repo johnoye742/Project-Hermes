@@ -1,6 +1,8 @@
 package hermes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -12,12 +14,16 @@ import java.util.Map;
 
 public class Main {
 	
-	public static Map<String, Object> database; 
+	public static Map<String, Object> database;
+	public static StringBuilder logs;
+	public static String rootDir = System.getProperty("user.home") + "/Project-Hermes";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
+			// Initialize variables
 			database = new HashMap<String, Object>();
+			logs = new StringBuilder("");
 			// Initiate server
 			ServerSocket ss = new ServerSocket(2907);
 			
@@ -32,8 +38,12 @@ public class Main {
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			
 				String line = br.readLine();
+				
+				
 				// Print the request
 				System.out.println(line);
+				
+				if(!line.toLowerCase().startsWith("exit")) logs.append(line + "\n");
 				
 				
 				// Send a response to the client
@@ -64,6 +74,26 @@ public class Main {
 		database.put(key, sb.toString().stripTrailing());
 	}
 	
+	public static void saveLog() {
+		try {
+			File logDir = new File(rootDir + File.separator + "logs");
+			File logFile = new File(rootDir + File.separator + "logs" + File.separator + "req_log.herm");
+			logDir.mkdirs();
+			
+			if(!logFile.exists()) logFile.createNewFile();
+			
+			FileWriter fw = new FileWriter(logFile);
+			fw.append(logs.toString());
+			
+			fw.flush();
+			fw.close();
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static String getAll() {
 		StringBuilder sb = new StringBuilder("");
 		sb.append("{");
@@ -91,6 +121,10 @@ public class Main {
 			case "set":
 				set(formatted[1], formatted);
 				return "Set successfully";
+			case "exit":
+				saveLog();
+				System.exit(0);
+				break;
 			case "all":
 				 return getAll();
 		}
