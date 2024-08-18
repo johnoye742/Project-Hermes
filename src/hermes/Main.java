@@ -10,9 +10,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,7 +22,7 @@ public class Main {
     private static final StringBuilder logs = new StringBuilder();
     private static final String rootDir = System.getProperty("user.home") + "/Project-Hermes";
     private static final String logFileAddr = rootDir + File.separator + "logs" + File.separator + "req_log.herm";
-    private static final int THREAD_POOL_SIZE = 1000;
+    private static final int THREAD_POOL_SIZE = 100;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public static void main(String[] args) {
