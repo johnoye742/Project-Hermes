@@ -5,13 +5,14 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class BenchMarking {
 	public static int requestsCompleted = 0;
     public static void main(String[] args) {
         String host = "localhost";
-        int port = 2907;
-        int numRequests = 100; // You can adjust the number of requests as needed
+        int port = 6379;
+        int numRequests = 500; // You can adjust the number of requests as needed
         ExecutorService exec = Executors.newFixedThreadPool(20);
         
         try {
@@ -48,7 +49,7 @@ exec.execute(new Runnable() {
             		}
             	});
             
-			while(exec.awaitTermination(1, null)) {
+			while(exec.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
 				exec.shutdown();
 			}
             long endTime = System.currentTimeMillis();
