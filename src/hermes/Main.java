@@ -3,9 +3,13 @@ package hermes;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -19,10 +23,11 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static final Map<String, Object> database = new ConcurrentHashMap<>(100, 5, 1000000);
+    private static Map<String, Object> database = new ConcurrentHashMap<>(100, 5, 1000000);
     private static final StringBuilder logs = new StringBuilder();
     private static final String rootDir = System.getProperty("user.home") + "/Project-Hermes";
     private static final String logFileAddr = rootDir + File.separator + "logs" + File.separator + "req_log.herm";
+    private static final String stateFile = rootDir + File.separator + "state" + File.separator + "state.ser";
     private static final int THREAD_POOL_SIZE = 100;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
@@ -33,7 +38,7 @@ public class Main {
             Thread bootLogThread = new Thread(new Runnable() {
             	@Override
             	public void run() {
-            		bootFromLog();
+            		resumeState();
 					System.out.println("Finished booting from log");
             	}
             });
@@ -51,7 +56,46 @@ public class Main {
         } finally {
             threadPool.shutdown();
             saveLog();
+            saveState();
         }
+    }
+    
+    private static void resumeState() {
+    	try {
+    		// sf = state file
+    		File sf = new File(rootDir + File.separator + "state");
+    		if(!sf.exists()) {
+    			sf.mkdirs();
+    			// do not continue if the directory didn't exist
+    			return;
+    		}
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(stateFile));
+			Object obj = ois.readObject();
+			if(obj	!= null) database = (Map<String, Object>) obj;
+			
+			ois.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("There might have being issues booting from persistent storage");
+		} 
+    	
+    }
+    
+    private static void saveState() {
+    	try {
+			FileOutputStream fos = new FileOutputStream(stateFile);
+			ObjectOutputStream stream = new ObjectOutputStream(fos);
+			
+			stream.writeObject(database);
+			
+			stream.flush();
+			stream.close();
+			fos.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Couldn't write the persistent data");
+		}
     }
 
     private static void handleClient(Socket socket) {
@@ -114,6 +158,7 @@ public class Main {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true))) {
             writer.append(logs.toString());
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,6 +199,12 @@ public class Main {
         database.put(key, sb.toString().stripTrailing());
         return "Successfully concatenated to string: " + key;
     }
+    
+    private static void delete(String key) {
+    	if(database.containsKey(key)) {
+    		database.remove(key);
+    	}
+    }
 
     private static String handleRequest(String request) {
         try {
@@ -166,6 +217,7 @@ public class Main {
                     return "Set successfully";
                 case "exit":
                     saveLog();
+                    saveState();
                     System.exit(0);
                     break;
                 case "all":
@@ -180,6 +232,9 @@ public class Main {
                 	return "Pushed array successfully";
                 case "array_get":
                 	return arrayGet(formatted[1]);
+                case "delete":
+                	delete(formatted[1]);
+                	return "Deleted the item successfully";
                 default:
                     return "Invalid command";
             }
