@@ -1,5 +1,9 @@
 package hermes;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -8,60 +12,118 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class BenchMarking {
-	public static int requestsCompleted = 0;
+    private static final String HOST = "localhost";
+    private static final int PORT = 6379;
+    private static final int NUM_REQUESTS = 100000;
+    private static final int NUM_CLIENTS = 50;
+    private static final int PIPELINE = 16;
+
     public static void main(String[] args) {
-        String host = "localhost";
-        int port = 6379;
-        int numRequests = 500; // You can adjust the number of requests as needed
-        ExecutorService exec = Executors.newFixedThreadPool(20);
+    	StringBuilder sb = new StringBuilder("");
+    	sb.append("{\n");
+        // Benchmark SET requests
+        double setRequestsPerSecond = benchmarkSetRequests();
+        System.out.printf("SET: %.2f requests per second%n", setRequestsPerSecond);
+
+        sb.append("\t\"SET\": \""+  setRequestsPerSecond + " requests per second\", \n");
+        // Benchmark GET requests
+        double getRequestsPerSecond = benchmarkGetRequests();
+        System.out.printf("GET: %.2f requests per second%n", getRequestsPerSecond);
+        sb.append("\t\"GET\": \""+  getRequestsPerSecond + " requests per second\" \n");
+        
+        sb.append("},\n");
+        
+        File benchMarkLog = new File(System.getProperty("user.home") + File.separator + "redis-benchmark-results.json");
         
         try {
-            long startTime = System.currentTimeMillis();
-            
-exec.execute(new Runnable() {
-            		@Override
-            		public void run() {
-            			for (int i = 1; i <= numRequests; i++) {
-            	
-            			try {
-							// Create a new socket connection to the server
-							Socket socket = new Socket(host, port);
+			BufferedWriter writer = new BufferedWriter(new FileWriter(benchMarkLog, true));
+			writer.append(sb.toString());
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 
-							// Prepare the request
-							String key = "key" + i;
-							String value = "value" + i;
-							String request = "SET " + key + " " + value;
+    private static double benchmarkSetRequests() {
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_CLIENTS);
+        long startTime = System.currentTimeMillis();
 
-							// Send the request
-							PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-							out.println(request);
+        for (int i = 0; i < NUM_CLIENTS; i++) {
+            executor.submit(() -> {
+                try {
+                    Socket socket = new Socket(HOST, PORT);
+                    PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 
-							// Close the socket immediately after sending the request
-							socket.close();
+                    for (int j = 0; j < NUM_REQUESTS / NUM_CLIENTS; j += PIPELINE) {
+                        for (int k = 0; k < PIPELINE; k++) {
+                            int requestNumber = j + k + 1;
+                            String key = "key" + requestNumber;
+                            String value = "value" + requestNumber;
+                            String setRequest = "SET " + key + " " + value;
+                            out.println(setRequest);
+                        }
+                    }
 
-							// Increment the number of completed requests
-							requestsCompleted++;
-							System.out.println(requestsCompleted);
-            			} catch (Exception e) {
-            				
-            			}
-            		}
-            		}
-            	});
-            
-			while(exec.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
-				exec.shutdown();
-			}
-            long endTime = System.currentTimeMillis();
-            long durationMillis = endTime - startTime;
-            System.out.println(durationMillis);
+                    socket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
 
-            double requestsPerSecond = (requestsCompleted * 1000.0) / durationMillis;
-
-            System.out.printf("SET: %.2f requests per second%n", requestsPerSecond);
-
-        } catch (Exception e) {
+        // Shut down executor and wait for tasks to finish
+        executor.shutdown();
+        try {
+            executor.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        long endTime = System.currentTimeMillis();
+        long durationMillis = endTime - startTime;
+
+        return (NUM_REQUESTS * 1000.0) / durationMillis;
+    }
+
+    private static double benchmarkGetRequests() {
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_CLIENTS);
+        long startTime = System.currentTimeMillis();
+
+        for (int i = 0; i < NUM_CLIENTS; i++) {
+            executor.submit(() -> {
+                try {
+                    Socket socket = new Socket(HOST, PORT);
+                    PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+
+                    for (int j = 0; j < NUM_REQUESTS / NUM_CLIENTS; j += PIPELINE) {
+                        for (int k = 0; k < PIPELINE; k++) {
+                            int requestNumber = j + k + 1;
+                            String key = "key" + requestNumber;
+                            String getRequest = "GET " + key;
+                            out.println(getRequest);
+                        }
+                    }
+
+                    socket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        // Shut down executor and wait for tasks to finish
+        executor.shutdown();
+        try {
+            executor.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        long endTime = System.currentTimeMillis();
+        long durationMillis = endTime - startTime;
+
+        return (NUM_REQUESTS * 1000.0) / durationMillis;
     }
 }
