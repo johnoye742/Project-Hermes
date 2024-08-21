@@ -26,6 +26,8 @@ public class TestApp {
             // Send a message to the server
             out.println(request);
             
+            if(request.toLowerCase() == "exit") System.exit(0);
+            
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			 
 			System.out.println(br.readLine());
