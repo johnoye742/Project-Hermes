@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static final Map<String, Object> database = new ConcurrentHashMap<>();
+    private static final Map<String, Object> database = new ConcurrentHashMap<>(100, 5, 1000000);
     private static final StringBuilder logs = new StringBuilder();
     private static final String rootDir = System.getProperty("user.home") + "/Project-Hermes";
     private static final String logFileAddr = rootDir + File.separator + "logs" + File.separator + "req_log.herm";
