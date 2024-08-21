@@ -10,9 +10,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,10 +28,21 @@ public class Main {
 
     public static void main(String[] args) {
         try (ServerSocket ss = new ServerSocket(2907)) {
+        	
             System.out.println("-- Hermes Initiated --");
-
+            Thread bootLogThread = new Thread(new Runnable() {
+            	@Override
+            	public void run() {
+            		bootFromLog();
+					System.out.println("Finished booting from log");
+            	}
+            });
+            
+            bootLogThread.start();
+			
             while (true) {
                 Socket s = ss.accept();
+                
                 threadPool.execute(() -> handleClient(s));
             }
         } catch (IOException e) {
@@ -50,7 +62,8 @@ public class Main {
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
                     System.out.println(line);
-                    logs.append(line).append("\n");
+                    
+                    if(!line.startsWith("exit")) logs.append(line).append("\n");
                     out.println(handleRequest(line));
                 }
             }
@@ -76,6 +89,22 @@ public class Main {
             sb.append(values[i]).append(" ");
         }
         database.put(key, sb.toString().stripTrailing());
+    }
+    
+    private static void arrayPush(String key, String value) {
+    	if(database.containsKey(key)) {
+    		ArrayList<String> array = (ArrayList<String>) database.get(key);
+    		array.add(value);
+    		return;
+    	} else {
+    		ArrayList<String> array = new ArrayList<>();
+    		array.add(value);
+    		database.put(key, array);
+    	}
+    }
+    
+    private static String arrayGet(String key) {
+    	return (String) database.get(key).toString();
     }
 
     private static void saveLog() {
@@ -146,6 +175,11 @@ public class Main {
                     return "Added successfully";
                 case "concat":
                     return concat(formatted[1], formatted);
+                case "array_push":
+                	arrayPush(formatted[1], formatted[2]);
+                	return "Pushed array successfully";
+                case "array_get":
+                	return arrayGet(formatted[1]);
                 default:
                     return "Invalid command";
             }
