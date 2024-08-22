@@ -1,4 +1,4 @@
-package hermes;
+package com.johnoye742.hermes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 
-public class TestApp {
+public class Client {
 
 	public static void main(String[] args) {
         String hostname = "localhost";

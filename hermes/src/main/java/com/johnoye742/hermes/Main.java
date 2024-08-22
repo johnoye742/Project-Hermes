@@ -1,4 +1,4 @@
-package hermes;
+package com.johnoye742.hermes;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.gson.*;
+
 public class Main {
 
     private static Map<String, Object> database = new ConcurrentHashMap<>(100, 5, 1000000);
@@ -33,21 +35,21 @@ public class Main {
 
     public static void main(String[] args) {
         try (ServerSocket ss = new ServerSocket(2907)) {
-        	
+
             System.out.println("-- Hermes Initiated --");
             Thread bootLogThread = new Thread(new Runnable() {
-            	@Override
-            	public void run() {
-            		resumeState();
-					System.out.println("Finished booting from log");
-            	}
+                @Override
+                public void run() {
+                    resumeState();
+                    System.out.println("Finished booting from log");
+                }
             });
-            
+
             bootLogThread.start();
-			
+
             while (true) {
                 Socket s = ss.accept();
-                
+
                 threadPool.execute(() -> handleClient(s));
             }
         } catch (IOException e) {
@@ -59,43 +61,43 @@ public class Main {
             saveState();
         }
     }
-    
+
     private static void resumeState() {
-    	try {
-    		// sf = state file
-    		File sf = new File(rootDir + File.separator + "state");
-    		if(!sf.exists()) {
-    			sf.mkdirs();
-    			// do not continue if the directory didn't exist
-    			return;
-    		}
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(stateFile));
-			Object obj = ois.readObject();
-			if(obj	!= null) database = (Map<String, Object>) obj;
-			
-			ois.close();
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("There might have being issues booting from persistent storage");
-		} 
-    	
+        try {
+            // sf = state file
+            File sf = new File(rootDir + File.separator + "state");
+            if(!sf.exists()) {
+                sf.mkdirs();
+                // do not continue if the directory didn't exist
+                return;
+            }
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(stateFile));
+            Object obj = ois.readObject();
+            if(obj	!= null) database = (Map<String, Object>) obj;
+
+            ois.close();
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            System.out.println("There might have being issues booting from persistent storage");
+        }
+
     }
-    
+
     private static void saveState() {
-    	try {
-			FileOutputStream fos = new FileOutputStream(stateFile);
-			ObjectOutputStream stream = new ObjectOutputStream(fos);
-			
-			stream.writeObject(database);
-			
-			stream.flush();
-			stream.close();
-			fos.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Couldn't write the persistent data");
-		}
+        try {
+            FileOutputStream fos = new FileOutputStream(stateFile);
+            ObjectOutputStream stream = new ObjectOutputStream(fos);
+
+            stream.writeObject(database);
+
+            stream.flush();
+            stream.close();
+            fos.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            System.out.println("Couldn't write the persistent data");
+        }
     }
 
     private static void handleClient(Socket socket) {
@@ -106,7 +108,7 @@ public class Main {
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
                     System.out.println(line);
-                    
+
                     if(!line.startsWith("exit")) logs.append(line).append("\n");
                     out.println(handleRequest(line));
                 }
@@ -134,21 +136,23 @@ public class Main {
         }
         database.put(key, sb.toString().stripTrailing());
     }
-    
+
     private static void arrayPush(String key, String value) {
-    	if(database.containsKey(key)) {
-    		ArrayList<String> array = (ArrayList<String>) database.get(key);
-    		array.add(value);
-    		return;
-    	} else {
-    		ArrayList<String> array = new ArrayList<>();
-    		array.add(value);
-    		database.put(key, array);
-    	}
+        if(database.containsKey(key)) {
+            ArrayList<String> array = (ArrayList<String>) database.get(key);
+            array.add(value);
+            return;
+        } else {
+            ArrayList<String> array = new ArrayList<>();
+            array.add(value);
+            database.put(key, array);
+        }
     }
-    
+
     private static String arrayGet(String key) {
-    	return (String) database.get(key).toString();
+        Gson json = new Gson();
+
+        return (String) json.toJson(database.get(key));
     }
 
     private static void saveLog() {
@@ -199,11 +203,11 @@ public class Main {
         database.put(key, sb.toString().stripTrailing());
         return "Successfully concatenated to string: " + key;
     }
-    
+
     private static void delete(String key) {
-    	if(database.containsKey(key)) {
-    		database.remove(key);
-    	}
+        if(database.containsKey(key)) {
+            database.remove(key);
+        }
     }
 
     private static String handleRequest(String request) {
@@ -228,13 +232,13 @@ public class Main {
                 case "concat":
                     return concat(formatted[1], formatted);
                 case "array_push":
-                	arrayPush(formatted[1], formatted[2]);
-                	return "Pushed array successfully";
+                    arrayPush(formatted[1], formatted[2]);
+                    return "Pushed array successfully";
                 case "array_get":
-                	return arrayGet(formatted[1]);
+                    return arrayGet(formatted[1]);
                 case "delete":
-                	delete(formatted[1]);
-                	return "Deleted the item successfully";
+                    delete(formatted[1]);
+                    return "Deleted the item successfully";
                 default:
                     return "Invalid command";
             }

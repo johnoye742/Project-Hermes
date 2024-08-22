@@ -1,4 +1,4 @@
-package hermes;
+package com.johnoye742.hermes;
 
 import java.io.BufferedWriter;
 import java.io.File;
