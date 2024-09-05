@@ -30,7 +30,7 @@ public class Main {
     private static final String rootDir = System.getProperty("user.home") + "/Project-Hermes";
     private static final String logFileAddr = rootDir + File.separator + "logs" + File.separator + "req_log.herm";
     private static final String stateFile = rootDir + File.separator + "state" + File.separator + "state.ser";
-    private static final int THREAD_POOL_SIZE = 100;
+    private static final int THREAD_POOL_SIZE = 100000;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public static void main(String[] args) {
@@ -57,28 +57,42 @@ public class Main {
             e.printStackTrace();
         } finally {
             threadPool.shutdown();
-            saveLog();
             saveState();
+            saveLog();
+
         }
     }
 
     private static void resumeState() {
         try {
-            // sf = state file
+            // sf = state file directory
             File sf = new File(rootDir + File.separator + "state");
+            File state  = new File(stateFile);
+
             if(!sf.exists()) {
-                sf.mkdirs();
+                // Checks if the state file directory was created
+                if(sf.mkdirs()) {
+                    // Checks if the state file exists already
+                    if(!state.exists()) {
+                        // Create a new file and if successful output a message
+                        if(state.createNewFile()) System.out.println("Created new state file.");
+                    }
+                }
                 // do not continue if the directory didn't exist
                 return;
             }
+            // If the directory exist, try to read from the file
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(stateFile));
+            // Read the object from the Object stream
             Object obj = ois.readObject();
+            // Try to cast the object to a Map and assign it to the `database` variable
             if(obj	!= null) database = (Map<String, Object>) obj;
 
+            // Close the ObjectInputStream when we're done
             ois.close();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            // If there were issues, log it
             System.out.println("There might have being issues booting from persistent storage");
         }
 
@@ -137,14 +151,23 @@ public class Main {
         database.put(key, sb.toString().stripTrailing());
     }
 
-    private static void arrayPush(String key, String value) {
+    private static void arrayPush(String key, String[] values) {
         if(database.containsKey(key)) {
             ArrayList<String> array = (ArrayList<String>) database.get(key);
-            array.add(value);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 2; i < values.length; i++) {
+                sb.append(values[i]).append(" ");
+            }
+
+            array.add(sb.toString().stripTrailing());
             return;
         } else {
             ArrayList<String> array = new ArrayList<>();
-            array.add(value);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 2; i < values.length; i++) {
+                sb.append(values[i]).append(" ");
+            }
+            array.add(sb.toString().stripTrailing());
             database.put(key, array);
         }
     }
@@ -152,7 +175,7 @@ public class Main {
     private static String arrayGet(String key) {
         Gson json = new Gson();
 
-        return (String) json.toJson(database.get(key));
+        return json.toJson(database.get(key));
     }
 
     private static void saveLog() {
@@ -182,7 +205,7 @@ public class Main {
     }
 
     private static String getAll() {
-        return database.toString();
+        return new Gson().toJson(database);
     }
 
     private static void add(String key, String value) {
@@ -195,6 +218,10 @@ public class Main {
         }
     }
 
+    /**
+        {@code @method} concat
+        @return String
+     */
     private static String concat(String key, String[] values) {
         StringBuilder sb = new StringBuilder(get(key));
         for (int i = 2; i < values.length; i++) {
@@ -205,9 +232,7 @@ public class Main {
     }
 
     private static void delete(String key) {
-        if(database.containsKey(key)) {
-            database.remove(key);
-        }
+        database.remove(key);
     }
 
     private static String handleRequest(String request) {
@@ -232,7 +257,7 @@ public class Main {
                 case "concat":
                     return concat(formatted[1], formatted);
                 case "array_push":
-                    arrayPush(formatted[1], formatted[2]);
+                    arrayPush(formatted[1], formatted);
                     return "Pushed array successfully";
                 case "array_get":
                     return arrayGet(formatted[1]);
