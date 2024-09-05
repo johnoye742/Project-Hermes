@@ -18,7 +18,7 @@ public class Client {
         Scanner sc = new Scanner(System.in);
         String request = sc.nextLine();
         
-        if(request.toLowerCase() == "q") System.exit(0);
+        if(request.equalsIgnoreCase("q")) System.exit(0);
 
         try (Socket socket = new Socket(hostname, port);
              PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
@@ -26,7 +26,7 @@ public class Client {
             // Send a message to the server
             out.println(request);
             
-            if(request.toLowerCase() == "exit") System.exit(0);
+            if(request.equalsIgnoreCase("exit")) System.exit(0);
             
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			 
