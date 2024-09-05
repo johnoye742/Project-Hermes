@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 public class BenchMarking {
     private static final String HOST = "localhost";
-    private static final int PORT = 6379;
-    private static final int NUM_REQUESTS = 100000;
-    private static final int NUM_CLIENTS = 50;
+    private static final int PORT = 2907;
+    private static final int NUM_REQUESTS = 1000000;
+    private static final int NUM_CLIENTS = 100;
     private static final int PIPELINE = 16;
 
     public static void main(String[] args) {
@@ -25,15 +25,15 @@ public class BenchMarking {
         double setRequestsPerSecond = benchmarkSetRequests();
         System.out.printf("SET: %.2f requests per second%n", setRequestsPerSecond);
 
-        sb.append("\t\"SET\": \""+  setRequestsPerSecond + " requests per second\", \n");
+        sb.append("\t\"SET\": \"").append(setRequestsPerSecond).append(" requests per second\", \n");
         // Benchmark GET requests
         double getRequestsPerSecond = benchmarkGetRequests();
         System.out.printf("GET: %.2f requests per second%n", getRequestsPerSecond);
-        sb.append("\t\"GET\": \""+  getRequestsPerSecond + " requests per second\" \n");
+        sb.append("\t\"GET\": \"").append(getRequestsPerSecond).append(" requests per second\" \n");
         
         sb.append("},\n");
         
-        File benchMarkLog = new File(System.getProperty("user.home") + File.separator + "redis-benchmark-results.json");
+        File benchMarkLog = new File(System.getProperty("user.home") + File.separator + "hermes-benchmark-results.json");
         
         try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(benchMarkLog, true));
