@@ -4,16 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e2736178-23e2-4cb7-94aa-c3482d709b08" name="Changes" comment="">
+    <list default="true" id="11c1ace9-2cda-4e49-b646-c173d4bb61f3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Project-Hermes.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/BenchMarking.java" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/BenchMarking.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/BenchMarking.class" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/BenchMarking.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hermes/target/hermes-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/hermes/target/hermes-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/BenchMarking.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/src/main/java/com/johnoye742/hermes/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/BenchMarking.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Client.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Main$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/classes/com/johnoye742/hermes/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/hermes-1.0-SNAPSHOT-jar-with-dependencies.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/hermes-1.0-SNAPSHOT.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/maven-archiver/pom.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,39 +35,58 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 8
-}</component>
-  <component name="ProjectId" id="2kzYB2HaYsbgUKX7lmg1behsdxP" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2mN6GPL82AXwz4vjt78LwXKT5Hd" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.BenchMarking.executor": "Run",
-    "Application.Client.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Maven.hermes [deploy].executor": "Run",
-    "Maven.hermes [install].executor": "Run",
-    "Maven.hermes [package].executor": "Run",
+    "Maven.Project-Hermes [package].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "kotlin-language-version-configured": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Project-Hermes" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Project-Hermes" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e2736178-23e2-4cb7-94aa-c3482d709b08" name="Changes" comment="" />
-      <created>1724287743930</created>
+      <changelist id="11c1ace9-2cda-4e49-b646-c173d4bb61f3" name="Changes" comment="" />
+      <created>1726904597262</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1724287743930</updated>
+      <updated>1726904597262</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
