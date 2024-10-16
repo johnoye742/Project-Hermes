@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class BenchMarking {
     private static final String HOST = "localhost";
     private static final int PORT = 2907;
-    private static final int NUM_REQUESTS = 1000000;
+    private static final int NUM_REQUESTS = 100000;
     private static final int NUM_CLIENTS = 100;
     private static final int PIPELINE = 16;
 
