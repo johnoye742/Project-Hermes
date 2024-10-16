@@ -30,39 +30,37 @@ public class Main {
     private static final String rootDir = System.getProperty("user.home") + "/Project-Hermes";
     private static final String logFileAddr = rootDir + File.separator + "logs" + File.separator + "req_log.herm";
     private static final String stateFile = rootDir + File.separator + "state" + File.separator + "state.ser";
-    private static final int THREAD_POOL_SIZE = 100000;
-    private static final ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     public static void main(String[] args) {
-        try (ServerSocket ss = new ServerSocket(2907)) {
+        try (ExecutorService threadPool = Executors.newVirtualThreadPerTaskExecutor()) {
+            try (ServerSocket ss = new ServerSocket(2907)) {
 
-            System.out.println("-- Hermes Initiated --");
-            Thread bootLogThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+                System.out.println("-- Hermes Initiated --");
+                Thread bootLogThread = new Thread(() -> {
                     resumeState();
                     System.out.println("Finished booting from log");
+                });
+
+                bootLogThread.start();
+
+
+                while (true) {
+                    Socket s = ss.accept();
+
+                    threadPool.execute(() -> handleClient(s));
                 }
-            });
+            } catch (IOException e) {
+                System.err.println("Could not start server");
+                e.printStackTrace();
+            } finally {
+                threadPool.shutdown();
+                saveState();
+                saveLog();
 
-            bootLogThread.start();
-
-            while (true) {
-                Socket s = ss.accept();
-
-                threadPool.execute(() -> handleClient(s));
             }
-        } catch (IOException e) {
-            System.err.println("Could not start server");
-            e.printStackTrace();
-        } finally {
-            threadPool.shutdown();
-            saveState();
-            saveLog();
-
         }
-    }
 
+    }
     private static void resumeState() {
         try {
             // sf = state file directory
